@@ -9,22 +9,20 @@
 (in-package :cl-rendezvous)
 
 (defun make-tconc ()
-  (list nil))
+  (let ((cell (list 'tconc)))
+    (cons cell cell)))
 
 (defun tconc-empty-p (tconc)
-  (null (cdr tconc)))
+  (eq (car tconc) (cdr tconc)))
 
 (defun push-tconc (tconc item)
   (let ((cell (list item)))
-    (cond ((null (cdr tconc))
-           (setf (car tconc) cell)
-           (setf (cdr tconc) cell))
-          (t
-           (setf (cddr tconc) cell)
-           (setf (cdr tconc) cell)))
-    tconc))
+    (setf (cddr tconc) cell)
+    (setf (cdr tconc) cell))
+    tconc)
 
 (defun pop-tconc (tconc)
-  (prog1 (caar tconc)
-         (if (null (setf (car tconc) (cdar tconc)))
-             (setf (cdr tconc) nil))))
+  (prog1 (cadar tconc)
+         (if (eq (setf (cdar tconc) (cddar tconc))
+                 (cdr tconc))
+             (setf (cdr tconc) (car tconc)))))
