@@ -13,9 +13,9 @@
 (in-package :cl-rendezvous-asd)
 
 (defsystem cl-rendezvous
-  :version "0.1-SNAPSHOT"
+  :version "11.9"
   :author "Kazuo Koga"
-  :license "new BSD"
+  :license "MIT"
   :depends-on (:cl-annot :bordeaux-threads)
   :components ((:module "src"
                 :components

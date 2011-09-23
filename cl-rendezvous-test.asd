@@ -10,7 +10,7 @@
 
 (defsystem cl-rendezvous-test
   :author "Kazuo Koga"
-  :license "new BSD"
+  :license "MIT"
   :depends-on (:cl-rendezvous
                :cl-test-more)
   :components ((:module "t"
