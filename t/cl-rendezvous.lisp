@@ -9,7 +9,9 @@
         :cl-rendezvous
         :cl-test-more)
   (:import-from :bordeaux-threads
-                :make-thread))
+                :make-thread
+                :thread-yield
+                :all-threads))
 (in-package :cl-rendezvous-test)
 
 (plan nil)
@@ -28,8 +30,37 @@
   (make-thread (lambda () (call-rendezvous rdv 1)))
   (is (accept-rendezvous rdv) 1))
 (let ((rdv (make-rendezvous)))
-  (make-thread (lambda () (is (accept-rendezvous rdv) 2)))
-  (call-rendezvous rdv 2))
+  (make-thread (lambda () (accept-rendezvous rdv)))
+  (is (call-rendezvous rdv 2) 2))
+(let ((rdv (make-rendezvous))
+      (count (length (all-threads))))
+  (loop repeat 100
+        do (make-thread (lambda () (accept-rendezvous rdv))))
+  (loop repeat 100
+        do (make-thread (lambda () (call-rendezvous rdv 0))))
+  (loop until (= count (length (all-threads)))
+        do (thread-yield))
+  (pass "many accept many call"))
+(let ((rdv (make-rendezvous))
+      (count (length (all-threads))))
+  (loop repeat 100
+        do (make-thread (lambda () (call-rendezvous rdv 0))))
+  (loop repeat 100
+        do (make-thread (lambda () (accept-rendezvous rdv))))
+  (loop until (= count (length (all-threads)))
+        do (thread-yield))
+  (pass "many call many accept"))
+(let ((rdv (make-rendezvous))
+      (count (length (all-threads))))
+  (loop repeat 100
+        do (make-thread (lambda () (call-rendezvous rdv 0)))
+           (make-thread (lambda () (accept-rendezvous rdv))))
+  (loop repeat 100
+        do (make-thread (lambda () (accept-rendezvous rdv)))
+           (make-thread (lambda () (call-rendezvous rdv 0))))
+  (loop until (= count (length (all-threads)))
+        do (thread-yield))
+  (pass "many call accept"))
 
 (diag "Extended rendezvous.")
 (let ((rdv (make-rendezvous)))
