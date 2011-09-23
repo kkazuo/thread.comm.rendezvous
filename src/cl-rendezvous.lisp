@@ -50,10 +50,11 @@
 
 
 (defclass rendezvous ()
-     ((name    :initarg :name)
-      (queue   :initform (make-tconc))
-      (lock    :initform (make-lock))
-      (condvar :initform (make-condition-variable))))
+     ((name         :initarg :name)
+      (queue        :initform (make-tconc))
+      (lock         :initform (make-lock))
+      (condvar      :initform (make-condition-variable))
+      (reader-count :initform 0)))
 
 (defmethod print-object ((rendezvous rendezvous) stream)
   (print-unreadable-object (rendezvous stream :type t :identity t)
@@ -69,23 +70,25 @@
 
 @export
 (defmethod call-rendezvous ((rendezvous rendezvous) value)
-  (with-slots (lock queue condvar) rendezvous
+  (with-slots (lock queue condvar reader-count) rendezvous
      (let* ((reader-signal (make-semaphore))
             (packet (cons reader-signal value)))
        (unwind-protect
            (with-lock-held (lock)
-             (when (tconc-empty-p queue)
-               (condition-notify condvar))
+             (when (< 0 reader-count)
+               (condition-notify condvar)
+               (decf reader-count))
              (push-tconc queue packet))
          (wait-on-semaphore reader-signal))
        (cdr packet))))
 
 @export
 (defmethod accept-rendezvous ((rendezvous rendezvous) &key reply)
-  (with-slots (lock queue condvar) rendezvous
+  (with-slots (lock queue condvar reader-count) rendezvous
      (with-lock-held (lock)
        (loop while (tconc-empty-p queue)
-             do (condition-wait condvar lock))
+             do (incf reader-count)
+                (condition-wait condvar lock))
        (let (writer)
          (unwind-protect
              (progn
