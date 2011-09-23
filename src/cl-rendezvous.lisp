@@ -49,8 +49,8 @@
 
 
 (defclass rendezvous ()
-     ((queue :initform (make-tconc))
-      (lock :initform (make-lock))
+     ((queue   :initform (make-tconc))
+      (lock    :initform (make-lock))
       (condvar :initform (make-condition-variable))))
 
 (defmethod call-rendezvous ((rendezvous rendezvous) value)
@@ -65,7 +65,7 @@
          (wait-on-semaphore reader-signal))
        (cdr packet))))
 
-(defmethod accept-rendezvous ((rendezvous rendezvous))
+(defmethod accept-rendezvous ((rendezvous rendezvous) &key extended)
   (with-slots (lock queue condvar) rendezvous
      (with-lock-held (lock)
        (loop while (tconc-empty-p queue)
@@ -74,6 +74,9 @@
          (unwind-protect
              (progn
                (setf writer (pop-tconc queue))
-               (cdr writer))
+               (let ((value (cdr writer)))
+                 (when extended
+                   (setf (cdr writer) (funcall extended value)))
+                 value))
            (when writer
              (signal-semaphore (car writer))))))))
