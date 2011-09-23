@@ -15,4 +15,4 @@
                :cl-test-more)
   :components ((:module "t"
                 :components
-                ((:file "cl-rendezvous")))))
+                ((:file "rendezvous")))))

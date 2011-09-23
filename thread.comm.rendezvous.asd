@@ -19,7 +19,7 @@
   :depends-on (:cl-annot :bordeaux-threads)
   :components ((:module "src"
                 :components
-                ((:file "cl-rendezvous"))))
+                ((:file "rendezvous"))))
   :description "Rendezvous thread synchronization"
   :long-description
   #.(with-open-file (stream (merge-pathnames
