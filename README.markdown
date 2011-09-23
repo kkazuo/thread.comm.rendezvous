@@ -1,4 +1,4 @@
-# Cl-Rendezvous
+# Thread.Comm.Rendezvous
 
 ## Usage
 
@@ -12,7 +12,7 @@ Use Quicklisp.
 
 ## API
 
-Cl-Rendezvous provides [CSP(Communicating sequential processes)](http://en.wikipedia.org/wiki/Communicating_sequential_processes) style inter thread communication channel.
+Thread.Comm.Rendezvous provides [CSP(Communicating sequential processes)](http://en.wikipedia.org/wiki/Communicating_sequential_processes) style inter thread communication channel.
 
 All API are MT-Safe.
 

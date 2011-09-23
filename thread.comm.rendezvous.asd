@@ -13,7 +13,7 @@
 (in-package :cl-rendezvous-asd)
 
 (defsystem :thread.comm.rendezvous
-  :version "11.9"
+  :version "11.9.1"
   :author "Kazuo Koga"
   :license "MIT"
   :depends-on (:cl-annot :bordeaux-threads)
