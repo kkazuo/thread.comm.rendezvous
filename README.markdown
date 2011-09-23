@@ -40,6 +40,10 @@ It's evaluated value becomes call-rendezvous thread's return value.
 
 Return _rendezvous_'s name.
 
+### [Function] nickname-package (&optional (name :rdv))
+
+Add nickname for this package (:THREAD.COMM.RENDEZVOUS).
+
 ## Author
 
 * Kazuo Koga
