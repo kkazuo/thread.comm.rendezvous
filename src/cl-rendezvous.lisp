@@ -24,15 +24,18 @@
     (cons cell cell)))
 
 (defun tconc-empty-p (tconc)
+  (declare (type cons tconc))
   (eq (car tconc) (cdr tconc)))
 
 (defun push-tconc (tconc item)
+  (declare (type cons tconc))
   (let ((cell (list item)))
     (setf (cddr tconc) cell)
     (setf (cdr tconc) cell))
     tconc)
 
 (defun pop-tconc (tconc)
+  (declare (type cons tconc))
   (prog1 (cadar tconc)
          (cond ((eq (cdar tconc) (cdr tconc))
                 (setf (cdar tconc) nil)
@@ -41,6 +44,7 @@
                 (setf (cdar tconc) (cddar tconc))))))
 
 (defun tconc-list (tconc)
+  (declare (type cons tconc))
   (cdar tconc))
 
 
