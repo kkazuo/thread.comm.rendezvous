@@ -81,7 +81,7 @@
        (cdr packet))))
 
 @export
-(defmethod accept-rendezvous ((rendezvous rendezvous) &key extended)
+(defmethod accept-rendezvous ((rendezvous rendezvous) &key reply)
   (with-slots (lock queue condvar) rendezvous
      (with-lock-held (lock)
        (loop while (tconc-empty-p queue)
@@ -91,8 +91,8 @@
              (progn
                (setf writer (pop-tconc queue))
                (let ((value (cdr writer)))
-                 (when extended
-                   (setf (cdr writer) (funcall extended value)))
+                 (when reply
+                   (setf (cdr writer) (funcall reply value)))
                  value))
            (when writer
              (signal-semaphore (car writer))))))))
