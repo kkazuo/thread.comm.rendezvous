@@ -16,7 +16,7 @@
   :version "0.1-SNAPSHOT"
   :author "Kazuo Koga"
   :license "new BSD"
-  :depends-on (:bordeaux-threads)
+  :depends-on (:cl-annot :bordeaux-threads)
   :components ((:module "src"
                 :components
                 ((:file "cl-rendezvous"))))

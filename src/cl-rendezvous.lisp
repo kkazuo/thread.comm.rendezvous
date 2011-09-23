@@ -18,6 +18,7 @@
                 :signal-semaphore
                 :wait-on-semaphore))
 (in-package :cl-rendezvous)
+(annot:enable-annot-syntax)
 
 (defun make-tconc ()
   (let ((cell (list 'tconc)))
@@ -54,13 +55,19 @@
       (lock    :initform (make-lock))
       (condvar :initform (make-condition-variable))))
 
-(defun make-rendezvous (&optional (name "Anonymous"))
-  (make-instance 'rendezvous :name name))
-
 (defmethod print-object ((rendezvous rendezvous) stream)
   (print-unreadable-object (rendezvous stream :type t :identity t)
     (format stream "~A" (slot-value rendezvous 'name))))
 
+@export
+(defun make-rendezvous (&optional (name "Anonymous"))
+  (make-instance 'rendezvous :name name))
+
+@export
+(defmethod rendezvous-name ((rendezvous rendezvous))
+  (slot-value rendezvous 'name))
+
+@export
 (defmethod call-rendezvous ((rendezvous rendezvous) value)
   (with-slots (lock queue condvar) rendezvous
      (let* ((reader-signal (make-semaphore))
@@ -73,6 +80,7 @@
          (wait-on-semaphore reader-signal))
        (cdr packet))))
 
+@export
 (defmethod accept-rendezvous ((rendezvous rendezvous) &key extended)
   (with-slots (lock queue condvar) rendezvous
      (with-lock-held (lock)
