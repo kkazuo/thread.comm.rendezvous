@@ -1,11 +1,10 @@
 #|
-  This file is a part of cl-rendezvous project.
+  This file is a part of thread.comm.rendezvous project.
   Copyright (c) 2011 Kazuo Koga
 |#
 
 (in-package :cl-user)
-(defpackage cl-rendezvous
-  (:nicknames :rendezvous)
+(defpackage :thread.comm.rendezvous
   (:use :cl)
   (:import-from :bordeaux-threads
                 :make-lock
@@ -17,8 +16,16 @@
                 :make-semaphore
                 :signal-semaphore
                 :wait-on-semaphore))
-(in-package :cl-rendezvous)
+(in-package :thread.comm.rendezvous)
 (annot:enable-annot-syntax)
+
+@export
+(defun nickname-package (&optional (nickname :rdv))
+  "Add NICKNAME (:RDV by default) to the :THREAD.COMM.RENDEZVOUS package."
+  (rename-package :thread.comm.rendezvous
+                  (package-name :thread.comm.rendezvous)
+                  (adjoin nickname (package-nicknames :thread.comm.rendezvous)
+                          :test #'string-equal)))
 
 (defun make-tconc ()
   (let ((cell (list 'tconc)))

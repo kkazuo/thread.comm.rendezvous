@@ -1,5 +1,5 @@
 #|
-  This file is a part of cl-rendezvous project.
+  This file is a part of thread.comm.rendezvous project.
   Copyright (c) 2011 Kazuo Koga
 |#
 
@@ -12,7 +12,7 @@
   (:use :cl :asdf))
 (in-package :cl-rendezvous-asd)
 
-(defsystem cl-rendezvous
+(defsystem :thread.comm.rendezvous
   :version "11.9"
   :author "Kazuo Koga"
   :license "MIT"

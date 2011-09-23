@@ -1,5 +1,5 @@
 #|
-  This file is a part of cl-rendezvous project.
+  This file is a part of thread.comm.rendezvous project.
   Copyright (c) 2011 Kazuo Koga
 |#
 
@@ -8,10 +8,10 @@
   (:use :cl :asdf))
 (in-package :cl-rendezvous-test-asd)
 
-(defsystem cl-rendezvous-test
+(defsystem :thread.comm.rendezvous.test
   :author "Kazuo Koga"
   :license "MIT"
-  :depends-on (:cl-rendezvous
+  :depends-on (:thread.comm.rendezvous
                :cl-test-more)
   :components ((:module "t"
                 :components

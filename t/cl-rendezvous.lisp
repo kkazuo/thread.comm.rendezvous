@@ -1,12 +1,12 @@
 #|
-  This file is a part of cl-rendezvous project.
+  This file is a part of thread.comm.rendezvous project.
   Copyright (c) 2011 Kazuo Koga
 |#
 
 (in-package :cl-user)
 (defpackage cl-rendezvous-test
   (:use :cl
-        :cl-rendezvous
+        :thread.comm.rendezvous
         :cl-test-more)
   (:import-from :bordeaux-threads
                 :make-thread
