@@ -49,9 +49,17 @@
 
 
 (defclass rendezvous ()
-     ((queue   :initform (make-tconc))
+     ((name    :initarg :name)
+      (queue   :initform (make-tconc))
       (lock    :initform (make-lock))
       (condvar :initform (make-condition-variable))))
+
+(defun make-rendezvous (&optional (name "Anonymous"))
+  (make-instance 'rendezvous :name name))
+
+(defmethod print-object ((rendezvous rendezvous) stream)
+  (print-unreadable-object (rendezvous stream :type t :identity t)
+    (format stream "~A" (slot-value rendezvous 'name))))
 
 (defmethod call-rendezvous ((rendezvous rendezvous) value)
   (with-slots (lock queue condvar) rendezvous
