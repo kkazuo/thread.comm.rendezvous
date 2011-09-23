@@ -16,11 +16,11 @@
   :version "0.1-SNAPSHOT"
   :author "Kazuo Koga"
   :license "new BSD"
-  :depends-on ()
+  :depends-on (:bordeaux-threads)
   :components ((:module "src"
                 :components
                 ((:file "cl-rendezvous"))))
-  :description ""
+  :description "Rendezvous thread synchronization"
   :long-description
   #.(with-open-file (stream (merge-pathnames
                              #p"README.markdown"

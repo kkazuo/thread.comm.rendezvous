@@ -5,7 +5,18 @@
 
 (in-package :cl-user)
 (defpackage cl-rendezvous
-  (:use :cl))
+  (:nicknames :rendezvous)
+  (:use :cl)
+  (:import-from :bordeaux-threads
+                :make-lock
+                :with-lock-held
+                :make-condition-variable
+                :condition-wait
+                :condition-notify)
+  (:import-from :ccl
+                :make-semaphore
+                :signal-semaphore
+                :wait-on-semaphore))
 (in-package :cl-rendezvous)
 
 (defun make-tconc ()
@@ -23,6 +34,42 @@
 
 (defun pop-tconc (tconc)
   (prog1 (cadar tconc)
-         (if (eq (setf (cdar tconc) (cddar tconc))
-                 (cdr tconc))
-             (setf (cdr tconc) (car tconc)))))
+         (cond ((eq (cdar tconc) (cdr tconc))
+                (setf (cdar tconc) nil)
+                (setf (cdr tconc) (car tconc)))
+               (t
+                (setf (cdar tconc) (cddar tconc))))))
+
+(defun tconc-list (tconc)
+  (cdar tconc))
+
+
+(defclass rendezvous ()
+     ((queue :initform (make-tconc))
+      (lock :initform (make-lock))
+      (condvar :initform (make-condition-variable))))
+
+(defmethod call-rendezvous ((rendezvous rendezvous) value)
+  (with-slots (lock queue condvar) rendezvous
+     (let* ((reader-signal (make-semaphore))
+            (packet (cons reader-signal value)))
+       (unwind-protect
+           (with-lock-held (lock)
+             (when (tconc-empty-p queue)
+               (condition-notify condvar))
+             (push-tconc queue packet))
+         (wait-on-semaphore reader-signal))
+       (cdr packet))))
+
+(defmethod accept-rendezvous ((rendezvous rendezvous))
+  (with-slots (lock queue condvar) rendezvous
+     (with-lock-held (lock)
+       (loop while (tconc-empty-p queue)
+             do (condition-wait condvar lock))
+       (let (writer)
+         (unwind-protect
+             (progn
+               (setf writer (pop-tconc queue))
+               (cdr writer))
+           (when writer
+             (signal-semaphore (car writer))))))))
