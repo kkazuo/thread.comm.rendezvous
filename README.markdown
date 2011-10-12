@@ -16,7 +16,7 @@ Thread.Comm.Rendezvous provides [CSP(Communicating sequential processes)](http:/
 
 All API are MT-Safe.
 
-Currently run only Clozure-CL.
+Currently run only on SBCL and Clozure-CL.
 
 ### [Function] make-rendezvous (&optional name)
 
