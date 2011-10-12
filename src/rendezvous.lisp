@@ -21,7 +21,7 @@
 (in-package :thread.comm.rendezvous)
 (annot:enable-annot-syntax)
 
-@export
+;;@export
 (defun nickname-package (&optional (nickname :rdv))
   "Add NICKNAME (:RDV by default) to the :THREAD.COMM.RENDEZVOUS package."
   (rename-package :thread.comm.rendezvous
