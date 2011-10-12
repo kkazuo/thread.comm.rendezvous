@@ -12,7 +12,9 @@
                 :make-condition-variable
                 :condition-wait
                 :condition-notify)
-  (:import-from :ccl
+  #+(or sb-thread ccl)
+  (:import-from #+ccl :ccl
+                #+sb-thread :sb-thread
                 :make-semaphore
                 :signal-semaphore
                 :wait-on-semaphore))
