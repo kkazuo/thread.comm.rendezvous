@@ -9,9 +9,10 @@
         :thread.comm.rendezvous
         :cl-test-more)
   (:import-from :bordeaux-threads
+                :make-lock
+                :with-lock-held
                 :make-thread
-                :thread-yield
-                :all-threads))
+                :thread-yield))
 (in-package :cl-rendezvous-test)
 
 (plan nil)
@@ -33,32 +34,39 @@
   (make-thread (lambda () (accept-rendezvous rdv)))
   (is (call-rendezvous rdv 2) 2))
 (let ((rdv (make-rendezvous))
-      (count (length (all-threads))))
+      (lock (make-lock))
+      (done 0))
   (loop repeat 100
         do (make-thread (lambda () (accept-rendezvous rdv))))
   (loop repeat 100
-        do (make-thread (lambda () (call-rendezvous rdv 0))))
-  (loop until (= count (length (all-threads)))
+        do (make-thread (lambda () (call-rendezvous rdv 0)
+                          (with-lock-held (lock) (incf done)))))
+  (loop until (= 100 done)
         do (thread-yield))
   (pass "many accept many call"))
 (let ((rdv (make-rendezvous))
-      (count (length (all-threads))))
+      (lock (make-lock))
+      (done 0))
   (loop repeat 100
-        do (make-thread (lambda () (call-rendezvous rdv 0))))
+        do (make-thread (lambda () (call-rendezvous rdv 0)
+                          (with-lock-held (lock) (incf done)))))
   (loop repeat 100
         do (make-thread (lambda () (accept-rendezvous rdv))))
-  (loop until (= count (length (all-threads)))
+  (loop until (= 100 done)
         do (thread-yield))
   (pass "many call many accept"))
 (let ((rdv (make-rendezvous))
-      (count (length (all-threads))))
+      (lock (make-lock))
+      (done 0))
   (loop repeat 100
-        do (make-thread (lambda () (call-rendezvous rdv 0)))
+        do (make-thread (lambda () (call-rendezvous rdv 0)
+                          (with-lock-held (lock) (incf done))))
            (make-thread (lambda () (accept-rendezvous rdv))))
   (loop repeat 100
         do (make-thread (lambda () (accept-rendezvous rdv)))
-           (make-thread (lambda () (call-rendezvous rdv 0))))
-  (loop until (= count (length (all-threads)))
+           (make-thread (lambda () (call-rendezvous rdv 0)
+                          (with-lock-held (lock) (incf done)))))
+  (loop until (= 200 done)
         do (thread-yield))
   (pass "many call accept"))
 
